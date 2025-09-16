@@ -12,7 +12,7 @@ class _NoteSplashScreenState extends State<NoteSplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 3), () {
       if (mounted) {
         Navigator.of(
           context,
@@ -37,20 +37,34 @@ class _NoteSplashScreenState extends State<NoteSplashScreen> {
             ),
           ),
           Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Text(
-                "Developed by Htet Ko Oo",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
+  bottom: 40,
+  left: 0,
+  right: 0,
+  child: Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "Name : Htet Ko Oo",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+            letterSpacing: 1,
           ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          "ID : 240702402305",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+            letterSpacing: 1,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
         ],
       ),
     );
