@@ -10,9 +10,10 @@ class _Note {
   late String content;
   late DateTime created;
   late int color;
+  late bool isFavorite;
 
   @override
   String toString() {
-    return 'Note(id: $id, title: $title, content: $content, created: $created,color:$color)';
+    return 'Note(id: $id, title: $title, content: $content, created: $created,color:$color,isFavorite:$isFavorite)';
   }
 }

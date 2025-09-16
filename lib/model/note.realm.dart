@@ -10,12 +10,20 @@ part of 'note.dart';
 // coverage:ignore-file
 // ignore_for_file: type=lint
 class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
-  Note(String id, String title, String content, DateTime created, int color) {
+  Note(
+    String id,
+    String title,
+    String content,
+    DateTime created,
+    int color,
+    bool isFavorite,
+  ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'title', title);
     RealmObjectBase.set(this, 'content', content);
     RealmObjectBase.set(this, 'created', created);
     RealmObjectBase.set(this, 'color', color);
+    RealmObjectBase.set(this, 'isFavorite', isFavorite);
   }
 
   Note._();
@@ -47,6 +55,11 @@ class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
   set color(int value) => RealmObjectBase.set(this, 'color', value);
 
   @override
+  bool get isFavorite => RealmObjectBase.get<bool>(this, 'isFavorite') as bool;
+  @override
+  set isFavorite(bool value) => RealmObjectBase.set(this, 'isFavorite', value);
+
+  @override
   Stream<RealmObjectChanges<Note>> get changes =>
       RealmObjectBase.getChanges<Note>(this);
 
@@ -64,6 +77,7 @@ class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
       'content': content.toEJson(),
       'created': created.toEJson(),
       'color': color.toEJson(),
+      'isFavorite': isFavorite.toEJson(),
     };
   }
 
@@ -77,6 +91,7 @@ class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
         'content': EJsonValue content,
         'created': EJsonValue created,
         'color': EJsonValue color,
+        'isFavorite': EJsonValue isFavorite,
       } =>
         Note(
           fromEJson(id),
@@ -84,6 +99,7 @@ class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
           fromEJson(content),
           fromEJson(created),
           fromEJson(color),
+          fromEJson(isFavorite),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -98,6 +114,7 @@ class Note extends _Note with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('content', RealmPropertyType.string),
       SchemaProperty('created', RealmPropertyType.timestamp),
       SchemaProperty('color', RealmPropertyType.int),
+      SchemaProperty('isFavorite', RealmPropertyType.bool),
     ]);
   }();
 

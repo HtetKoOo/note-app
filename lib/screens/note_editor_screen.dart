@@ -91,6 +91,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     _contentController.text.trim(),
                     DateTime.now(),
                     currentColor.value,
+                    widget.note!.isFavorite,
                   );
                   noteService.updateNote(note);
                 } else {
@@ -101,6 +102,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     _contentController.text.trim(),
                     DateTime.now(),
                     currentColor.value,
+                    false,
                   );
                   noteService.addNote(note);
                 }

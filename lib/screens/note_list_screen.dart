@@ -8,16 +8,33 @@ import 'package:note_app/provider/theme_provider.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 
-class NoteListScreen extends StatelessWidget {
+class NoteListScreen extends StatefulWidget {
   const NoteListScreen({super.key});
+
+  @override
+  State<NoteListScreen> createState() => _NoteListScreenState();
+}
+
+class _NoteListScreenState extends State<NoteListScreen> {
+  bool _showFavoritesOnly = false;
 
   @override
   Widget build(BuildContext context) {
     final NoteService noteService = ServiceProvider.of(context)!.noteService;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes"),
+        title: Text(_showFavoritesOnly ? "Favorites" : "Notes"),
         actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _showFavoritesOnly = !_showFavoritesOnly;
+              });
+            },
+            icon: Icon(
+              _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
+            ),
+          ),
           IconButton(
             onPressed: () {
               ThemeProvider.of(context)!.changeTheme();
@@ -35,14 +52,19 @@ class NoteListScreen extends StatelessWidget {
         ],
       ),
       body: StreamBuilder(
-        stream: noteService.getAllNotes(),
+        stream: _showFavoritesOnly
+            ? noteService.getAllFavoriteNotes()
+            : noteService.getAllNotes(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final List<Note> allNotes =
-              snapshot.data!.results.map((n) => n as Note).toList();
+          final notes = snapshot.data?.results;
+          if (notes == null || notes.isEmpty) {
+            return const Center(child: Text("No notes found"));
+          }
+
           return GridView.custom(
             padding: EdgeInsets.all(16),
             gridDelegate: SliverQuiltedGridDelegate(
@@ -57,13 +79,13 @@ class NoteListScreen extends StatelessWidget {
               ],
             ),
             childrenDelegate: SliverChildBuilderDelegate(
-              childCount: allNotes.length,
+              childCount: notes.length,
               (context, index) => NoteCard(
-                note: allNotes[index],
+                note: notes[index],
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => NoteEditorScreen(note: allNotes[index]),
+                      builder: (_) => NoteEditorScreen(note: notes[index]),
                     ),
                   );
                 },
@@ -93,6 +115,7 @@ class NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final NoteService noteService = ServiceProvider.of(context)!.noteService;
     return InkWell(
       splashColor: Colors.black54,
       onTap: onTap,
@@ -117,9 +140,23 @@ class NoteCard extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            Text(
-              DateFormat.yMMMd().format(note.created),
-              style: TextStyle(color: Colors.black),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  DateFormat.yMMMd().format(note.created),
+                  style: TextStyle(color: Colors.black),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    noteService.toggleFavoriteStatus(note);
+                  },
+                  child: Icon(
+                    note.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: note.isFavorite ? Colors.yellow.shade800 : Colors.black,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
